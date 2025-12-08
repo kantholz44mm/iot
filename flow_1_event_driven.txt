@@ -1,0 +1,385 @@
+[
+    {
+        "id": "197948cce496f977",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "037dad1d90dd1adc",
+        "type": "mqtt in",
+        "z": "197948cce496f977",
+        "name": "sensors of RasPy",
+        "topic": "iot/sensors",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "6ac719c63ad80d7a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 300,
+        "y": 120,
+        "wires": [
+            [
+                "60eab488c1271324",
+                "fac239e003b4e53d"
+            ]
+        ]
+    },
+    {
+        "id": "60eab488c1271324",
+        "type": "debug",
+        "z": "197948cce496f977",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "058f92771564dc45",
+        "type": "ui_chart",
+        "z": "197948cce496f977",
+        "name": "",
+        "group": "d7f8992ffbedd439",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "Ultrasonic Sensor",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 710,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fac239e003b4e53d",
+        "type": "switch",
+        "z": "197948cce496f977",
+        "name": "Sensor Switch",
+        "property": "payload.Sensor",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Ultrasonic Sensor",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "PIR Sensor",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Audio Sensor",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 260,
+        "y": 280,
+        "wires": [
+            [
+                "0ad69bd790b671c9"
+            ],
+            [
+                "d00a625075942d07"
+            ],
+            [
+                "5660af2c8ea322e3"
+            ]
+        ]
+    },
+    {
+        "id": "0ad69bd790b671c9",
+        "type": "function",
+        "z": "197948cce496f977",
+        "name": "Value Extract",
+        "func": "msg.payload = msg.payload.Value;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 260,
+        "wires": [
+            [
+                "058f92771564dc45"
+            ]
+        ]
+    },
+    {
+        "id": "9d5c2df3767f0575",
+        "type": "ui_text",
+        "z": "197948cce496f977",
+        "group": "d7f8992ffbedd439",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "PIR",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 710,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "d9a68172d9ec2bf2",
+        "type": "delay",
+        "z": "197948cce496f977",
+        "name": "Toggle Delay",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 490,
+        "y": 420,
+        "wires": [
+            [
+                "fccc50eb2739cd01"
+            ]
+        ]
+    },
+    {
+        "id": "d00a625075942d07",
+        "type": "function",
+        "z": "197948cce496f977",
+        "name": "Active",
+        "func": "msg.payload = \"Aktiv\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 340,
+        "wires": [
+            [
+                "9d5c2df3767f0575",
+                "d9a68172d9ec2bf2"
+            ]
+        ]
+    },
+    {
+        "id": "fccc50eb2739cd01",
+        "type": "function",
+        "z": "197948cce496f977",
+        "name": "Inactive",
+        "func": "msg.payload = \"Inaktiv\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 400,
+        "wires": [
+            [
+                "9d5c2df3767f0575"
+            ]
+        ]
+    },
+    {
+        "id": "9d6fd830e32bf106",
+        "type": "ui_text",
+        "z": "197948cce496f977",
+        "group": "d7f8992ffbedd439",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Sound",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 690,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "3fd63556e7f7ef32",
+        "type": "delay",
+        "z": "197948cce496f977",
+        "name": "Toggle Delay",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 470,
+        "y": 580,
+        "wires": [
+            [
+                "6cf539c71306824f"
+            ]
+        ]
+    },
+    {
+        "id": "5660af2c8ea322e3",
+        "type": "function",
+        "z": "197948cce496f977",
+        "name": "Active",
+        "func": "msg.payload = \"Aktiv\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 500,
+        "wires": [
+            [
+                "9d6fd830e32bf106",
+                "3fd63556e7f7ef32"
+            ]
+        ]
+    },
+    {
+        "id": "6cf539c71306824f",
+        "type": "function",
+        "z": "197948cce496f977",
+        "name": "Inactive",
+        "func": "msg.payload = \"Inaktiv\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 560,
+        "wires": [
+            [
+                "9d6fd830e32bf106"
+            ]
+        ]
+    },
+    {
+        "id": "6ac719c63ad80d7a",
+        "type": "mqtt-broker",
+        "name": "hive",
+        "broker": "broker.hivemq.com",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "d7f8992ffbedd439",
+        "type": "ui_group",
+        "name": "Standard",
+        "tab": "f1c8308d9ae67fe7",
+        "order": 1,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "f1c8308d9ae67fe7",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "0579eb77d72a105b",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
