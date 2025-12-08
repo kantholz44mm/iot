@@ -1,0 +1,283 @@
+[
+    {
+        "id": "39182e558cf48c66",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c3d56a875652ec44",
+        "type": "mqtt in",
+        "z": "39182e558cf48c66",
+        "name": "sensors of RasPy",
+        "topic": "iot/sensors",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "6ac719c63ad80d7a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 100,
+        "wires": [
+            [
+                "4ff50ed4ce05fe77",
+                "baf5747829414234",
+                "695a29cc2f4c2cc5"
+            ]
+        ]
+    },
+    {
+        "id": "4ff50ed4ce05fe77",
+        "type": "function",
+        "z": "39182e558cf48c66",
+        "name": "Value Extract PIR",
+        "func": "msg.payload = msg.payload.Sensor_PIR;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 140,
+        "wires": [
+            [
+                "1f32d67b453d1c8e"
+            ]
+        ]
+    },
+    {
+        "id": "1f32d67b453d1c8e",
+        "type": "ui_chart",
+        "z": "39182e558cf48c66",
+        "name": "",
+        "group": "d7f8992ffbedd439",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "Pir Sensor",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "1",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 610,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "695a29cc2f4c2cc5",
+        "type": "function",
+        "z": "39182e558cf48c66",
+        "name": "Value Extract Ultra",
+        "func": "msg.payload = msg.payload.Sensor_Ultra;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 280,
+        "wires": [
+            [
+                "f0efdd8d7f187094"
+            ]
+        ]
+    },
+    {
+        "id": "f0efdd8d7f187094",
+        "type": "ui_chart",
+        "z": "39182e558cf48c66",
+        "name": "",
+        "group": "d7f8992ffbedd439",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "Ultrasonic Sensor",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 630,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "baf5747829414234",
+        "type": "function",
+        "z": "39182e558cf48c66",
+        "name": "Value Extract Sound",
+        "func": "msg.payload = msg.payload.Sensor_Sound;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 220,
+        "wires": [
+            [
+                "91bbe4d85abe9322"
+            ]
+        ]
+    },
+    {
+        "id": "91bbe4d85abe9322",
+        "type": "ui_chart",
+        "z": "39182e558cf48c66",
+        "name": "",
+        "group": "d7f8992ffbedd439",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "Sound Sensor",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "1",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 620,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6ac719c63ad80d7a",
+        "type": "mqtt-broker",
+        "name": "hive",
+        "broker": "broker.hivemq.com",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "d7f8992ffbedd439",
+        "type": "ui_group",
+        "name": "Standard",
+        "tab": "f1c8308d9ae67fe7",
+        "order": 1,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "f1c8308d9ae67fe7",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "9c2cdf4a39e9b488",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
