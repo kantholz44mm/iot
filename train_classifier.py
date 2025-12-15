@@ -43,7 +43,8 @@ def load_and_prepare_data(paths):
 X_train, X_test, Y_train, Y_test = load_and_prepare_data([
     ("training_data/data_present.json", "present"),
     ("training_data/data_present_v2.json", "present"),
-    ("training_data/data_not_present.json", "not present")
+    ("training_data/data_not_present.json", "not present"),
+    ("training_data/data_present_v3.json", "present")
 ])
 
 
