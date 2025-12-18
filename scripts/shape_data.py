@@ -3,6 +3,7 @@ from datetime import datetime
 from pathlib import Path
 import statistics
 
+
 def shape_json(rows):
     shaped_rows = []
 
@@ -21,13 +22,13 @@ def shape_json(rows):
         if last_sound is None or sound:
             last_sound = timestamp
 
-        since_last_motion = timestamp - last_motion
-        since_last_sound = timestamp - last_sound
+        since_last_motion = (timestamp - last_motion).total_seconds()
+        since_last_sound = (timestamp - last_sound).total_seconds()
         shaped_rows.append({'distance': float(distance),
                             'motion': float(motion),
                             'sound': float(sound),
-                            'since_last_motion': str(since_last_motion),
-                            'since_last_sound': str(since_last_sound)
+                            'since_last_motion': since_last_motion,
+                            'since_last_sound': since_last_sound
                             })
     return shaped_rows
 
@@ -56,16 +57,18 @@ def windowify(rows, window_size):
 
     return window_data
 
-for path in Path("training_data").iterdir():
-    if path.is_file() and path.suffix == ".almost_json":
-        input = str(path)
-        output = input.replace("almost_json", "json")
-        print(f"shaping: {input} -> {output}")
 
-        with open(input, 'r') as raw:
-            lines = raw.readlines()
-            rows = [json.loads(line) for line in lines]
-            windows = windowify(shape_json(rows), 30)
+def shape_all():
+    for path in Path("training_data").rglob("*.almost_json"):
+        if path.is_file():
+            input = str(path)
+            output = input.replace("almost_json", "json")
+            print(f"shaping: {input} -> {output}")
 
-        with open(output, 'w') as processed:
-            processed.write(json.dumps(windows, indent=4))
+            with open(input, 'r') as raw:
+                lines = raw.readlines()
+                rows = [json.loads(line) for line in lines]
+                windows = windowify(shape_json(rows), 30)
+
+            with open(output, 'w') as processed:
+                processed.write(json.dumps(windows, indent=4))
