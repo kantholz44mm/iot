@@ -1,10 +1,21 @@
 from train_classifier import train_random_forest, FEATURES
 from shape_data import windowify, shape_json
 from collections import deque
+from datetime import timedelta
 import joblib
 import json
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
+from enum import Enum
+
+
+class AnomalyType(Enum):
+    NODATA = 1
+    OUTOFRANGE = 2
+    JITTER = 3
+    TIMEOUT = 4
+    SENSORDEFECTIVE = 5
+
 
 _WINDOW_LENGTH = 30
 _MODEL_PATH = "trained_model_random_forest.joblib"
@@ -54,3 +65,26 @@ def estimate_current_state() -> tuple[str, float]:
     confidence = np.max(probabilities) * (window_size / _WINDOW_LENGTH)
 
     return (str(prediction), float(confidence))
+
+
+# returns a list of detected anomalies in the form of (anomaly type, anomaly description)
+def detect_anomalies(max_stddev: float, max_absence: timedelta) -> list[tuple[AnomalyType, str]]:
+    anomalies = []
+    window_size = len(data_queue)
+
+    if window_size <= 0:
+        anomalies.append((AnomalyType.NODATA, "There seems to be no data yet. Either the sensor or the network is down."))
+    else:
+        window = windowify(shape_json(list(data_queue)), window_size)[0]
+        absence = timedelta(seconds=min(window["motion_min"], window["sound_min"]))
+
+        if window["avg_distance"] < 0.0 or window["avg_distance"] > 2.0:
+            anomalies.append((AnomalyType.OUTOFRANGE, f"The distance is measured to be {window['avg_distance']} but the sensor range is 0.0 - 2.0"))
+        if window["stdev_distance"] > max_stddev:
+            anomalies.append((AnomalyType.JITTER, f"The distance measurement jitters strongly with a standard deviation of {window['stdev_distance']}"))
+        if absence > max_absence:
+            anomalies.append((AnomalyType.TIMEOUT, f"Noone was detected for {absence}, with a timeout of {max_absence}"))
+        if window["num_sound"] == window_size and window_size > 15:
+            anomalies.append((AnomalyType.SENSORDEFECTIVE, f"The sound sensor may be defective. It measured only noise for the last {window_size} dataframes."))
+
+    return anomalies

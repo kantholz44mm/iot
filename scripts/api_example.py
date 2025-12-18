@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import datetime, timedelta
 
 if input("Train model? [y/n]").lower() in ["y", "yes"]:
-    api.train_model(False, True)
+    api.train_model(True, True)
 
 api.load_model()
 
@@ -17,3 +17,4 @@ for i in range(30):
     api.push_data(data)
 
 print(api.estimate_current_state())
+print(api.detect_anomalies(0.7, timedelta(days=3)))
