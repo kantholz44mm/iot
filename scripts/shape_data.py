@@ -1,74 +1,483 @@
-import json
-from datetime import datetime
-from pathlib import Path
-import statistics
-
-
-def shape_json(rows):
-    shaped_rows = []
-
-    last_motion = None
-    last_sound = None
-
-    for row in rows:
-        distance = row["Sensor_Ultra"] or 2.0
-        motion = row["Sensor_PIR"] or 0.0
-        sound = row["Sensor_Sound"] or 0.0
-        timestamp = datetime.strptime(row["Time"], "%Y-%m-%d %H:%M:%S.%f")
-
-        if last_motion is None or motion:
-            last_motion = timestamp
-
-        if last_sound is None or sound:
-            last_sound = timestamp
-
-        since_last_motion = (timestamp - last_motion).total_seconds()
-        since_last_sound = (timestamp - last_sound).total_seconds()
-        shaped_rows.append({'distance': float(distance),
-                            'motion': float(motion),
-                            'sound': float(sound),
-                            'since_last_motion': since_last_motion,
-                            'since_last_sound': since_last_sound
-                            })
-    return shaped_rows
-
-
-def windowify(rows, window_size):
-    num_windows = len(rows) - window_size + 1
-    window_data = []
-
-    for w in range(num_windows):
-        window = rows[w:w+window_size]
-        avg_dist = sum([row["distance"] for row in window]) / window_size
-        stdev_dist = statistics.stdev([row["distance"] for row in window])
-        num_motion = len([1 for row in window if row["motion"]])
-        num_sound = len([1 for row in window if row["sound"]])
-        motion_min = min([row["since_last_motion"] for row in window])
-        sound_min = min([row["since_last_sound"] for row in window])
-
-        window_data.append({
-            'avg_distance': avg_dist,
-            'stdev_distance': stdev_dist,
-            'num_motion': num_motion,
-            'num_sound': num_sound,
-            'motion_min': motion_min,
-            'sound_min': sound_min
-        })
-
-    return window_data
-
-
-def shape_all():
-    for path in Path("training_data").rglob("*.almost_json"):
-        if path.is_file():
-            input = str(path)
-            output = input.replace("almost_json", "json")
-            print(f"shaping: {input} -> {output}")
-
-            with open(input, 'r') as raw:
-                lines = raw.readlines()
-                rows = [json.loads(line) for line in lines]
-                windows = windowify(shape_json(rows), 30)
-
-            with open(output, 'w') as processed:
-                processed.write(json.dumps(windows, indent=4))
+[
+    {
+        "id": "39182e558cf48c66",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c3d56a875652ec44",
+        "type": "mqtt in",
+        "z": "39182e558cf48c66",
+        "name": "sensors of RasPy",
+        "topic": "iot/sensors",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "6ac719c63ad80d7a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 80,
+        "y": 200,
+        "wires": [
+            [
+                "d59d80f959d5b25b"
+            ]
+        ]
+    },
+    {
+        "id": "4ff50ed4ce05fe77",
+        "type": "function",
+        "z": "39182e558cf48c66",
+        "name": "Value Extract PIR",
+        "func": "msg.payload = msg.payload.Sensor_PIR;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 120,
+        "wires": [
+            [
+                "1f32d67b453d1c8e"
+            ]
+        ]
+    },
+    {
+        "id": "1f32d67b453d1c8e",
+        "type": "ui_chart",
+        "z": "39182e558cf48c66",
+        "name": "",
+        "group": "d7f8992ffbedd439",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "Pir Sensor",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "1",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 730,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "695a29cc2f4c2cc5",
+        "type": "function",
+        "z": "39182e558cf48c66",
+        "name": "Value Extract Ultra",
+        "func": "msg.payload = msg.payload.Sensor_Ultra;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 250,
+        "wires": [
+            [
+                "f0efdd8d7f187094"
+            ]
+        ]
+    },
+    {
+        "id": "f0efdd8d7f187094",
+        "type": "ui_chart",
+        "z": "39182e558cf48c66",
+        "name": "",
+        "group": "d7f8992ffbedd439",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "Ultrasonic Sensor",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 750,
+        "y": 250,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "baf5747829414234",
+        "type": "function",
+        "z": "39182e558cf48c66",
+        "name": "Value Extract Sound",
+        "func": "msg.payload = msg.payload.Sensor_Sound;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 185,
+        "wires": [
+            [
+                "91bbe4d85abe9322"
+            ]
+        ]
+    },
+    {
+        "id": "91bbe4d85abe9322",
+        "type": "ui_chart",
+        "z": "39182e558cf48c66",
+        "name": "",
+        "group": "d7f8992ffbedd439",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "Sound Sensor",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "1",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 740,
+        "y": 185,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4a32888f41a5dfa1",
+        "type": "file",
+        "z": "39182e558cf48c66",
+        "name": "",
+        "filename": "C:\\Users\\nicol\\Desktop\\data_sensor.txt",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 550,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "107d34bd8d2a81de",
+        "type": "function",
+        "z": "39182e558cf48c66",
+        "name": "Value Extract Category",
+        "func": "msg.payload = msg.payload.Prediction[0];\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 315,
+        "wires": [
+            [
+                "1dc4da2750a5bd69"
+            ]
+        ]
+    },
+    {
+        "id": "53441296cbcf33f5",
+        "type": "function",
+        "z": "39182e558cf48c66",
+        "name": "Value Extract Anomaly",
+        "func": "msg.payload = msg.payload.Anomaly;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 440,
+        "wires": [
+            [
+                "a5e7c0a6ada5a5c4"
+            ]
+        ]
+    },
+    {
+        "id": "1dc4da2750a5bd69",
+        "type": "ui_text",
+        "z": "39182e558cf48c66",
+        "group": "65df6b7e2bb8a395",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "AI Category",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 750,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "a5e7c0a6ada5a5c4",
+        "type": "ui_text",
+        "z": "39182e558cf48c66",
+        "group": "65df6b7e2bb8a395",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Anomaly Detection",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 770,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "6ba1af7d421b4ab9",
+        "type": "function",
+        "z": "39182e558cf48c66",
+        "name": "Value Extract Category score",
+        "func": "let confidence = msg.payload.Prediction[1];\nmsg.payload = (confidence * 100).toFixed(1);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 380,
+        "wires": [
+            [
+                "cb29bb3202f25c63"
+            ]
+        ]
+    },
+    {
+        "id": "cb29bb3202f25c63",
+        "type": "ui_gauge",
+        "z": "39182e558cf48c66",
+        "name": "",
+        "group": "65df6b7e2bb8a395",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Confidence",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#ca3838",
+            "#e6e600",
+            "#00d936"
+        ],
+        "seg1": "0.5",
+        "seg2": "0.75",
+        "diff": false,
+        "className": "",
+        "x": 750,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "d59d80f959d5b25b",
+        "type": "function",
+        "z": "39182e558cf48c66",
+        "name": "no Init Message",
+        "func": "\nif (msg.payload.hasOwnProperty(\"floor\")) {\n    //wrong payload\n    msg.payload = {Sensor_PIR : 0, Sensor_Ultra : 0, Sensor_Sound : 0, Time : 0, Prediction : [0,0], Anomaly: []};\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 200,
+        "wires": [
+            [
+                "4a32888f41a5dfa1",
+                "53441296cbcf33f5",
+                "6ba1af7d421b4ab9",
+                "107d34bd8d2a81de",
+                "695a29cc2f4c2cc5",
+                "baf5747829414234",
+                "4ff50ed4ce05fe77"
+            ]
+        ]
+    },
+    {
+        "id": "0a7fde53c6616cb1",
+        "type": "debug",
+        "z": "39182e558cf48c66",
+        "name": "payload",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "6ac719c63ad80d7a",
+        "type": "mqtt-broker",
+        "name": "hive",
+        "broker": "broker.hivemq.com",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "d7f8992ffbedd439",
+        "type": "ui_group",
+        "name": "Standard",
+        "tab": "f1c8308d9ae67fe7",
+        "order": 1,
+        "disp": false,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "65df6b7e2bb8a395",
+        "type": "ui_group",
+        "name": "v2",
+        "tab": "f1c8308d9ae67fe7",
+        "order": 2,
+        "disp": false,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "f1c8308d9ae67fe7",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "order": 2,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "dec9845345f7e514",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
