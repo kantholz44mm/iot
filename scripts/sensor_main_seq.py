@@ -8,6 +8,10 @@ from time import sleep
 
 import paho.mqtt.client as mqtt
 
+import api
+from pathlib import Path
+from datetime import datetime, timedelta
+
 def on_connect(client, userdata, flags, rc):
     """Wird aufgerufen, wenn der Client eine Verbindung zum Broker herstellt."""
     if rc == 0:
@@ -30,13 +34,28 @@ def publish(client,sensor, value_sensor, timestamp_sensor, topic):
 def publish_all(client, topic):
     dst_ultra = str(u_sonic_sensor.distance)
     timestamp_sensor = str(datetime.now())
-    msg = json.dumps({"Sensor_PIR" : pir_detect, "Sensor_Ultra" : dst_ultra, "Sensor_Sound" : sound_detect, "Time" : timestamp_sensor},)
+    data = {"Sensor_PIR" : pir_detect, "Sensor_Ultra" : dst_ultra, "Sensor_Sound" : sound_detect, "Time" : timestamp_sensor}
+    
     #msg = f"{sensor} : {message}"
+
+    api.push_data(data)
+
+    global enough_data
+    if (enough_data > 30):
+        data["Prediction"] = api.estimate_current_state()
+        data["Anomaly"] = api.detect_anomalies(0.7, timedelta(days=3))
+        print(f"Data prediction is: {data["Prediction"]} and Anomaly testing is: {data["Anomaly"]}")
+    else:
+        data["Prediction"] = ["Waiting for enought samples ...", 0]
+        data["Anomaly"] = "Waiting for enought samples ..."
+        enough_data += 1
+    msg = json.dumps(data)
+
     result = client.publish(topic, msg)
     status = result[0]
     
     if status == 0:
-        print(f"Send `{msg}` to topic `{topic}`")
+        print(f"Send `{msg}` to topic `{topic}`")   
     else:
         print(f"Failed to send message to topic {topic}")
 
@@ -78,19 +97,19 @@ client.connect(broker, port)
 audio_sensor.when_pressed = set_sound
 motion_sensor.when_pressed = set_pir
 
+api.load_model()
+enough_data = 0
+
 client.loop_start()
 
 try:
     while True:
         publish_all(client, topic)
         reset_vals()
-        sleep(0.3)
+        sleep(0.5)
 finally:
 
     client.loop_stop()
     client.disconnect()
     print("Verbindung getrennt.")
 
-
-#TODO: PIR Sensor als genauere Aktivierung für Ultrasonic, um dann dort distance auszulesen.
-#Objekte, welche immer im schwellwert sitzen blockieren die in range methode. vielleicht flag setzen, wenn in range und out of range
