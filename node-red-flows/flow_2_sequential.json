@@ -20,13 +20,11 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 140,
-        "y": 100,
+        "x": 80,
+        "y": 200,
         "wires": [
             [
-                "4ff50ed4ce05fe77",
-                "baf5747829414234",
-                "695a29cc2f4c2cc5"
+                "d59d80f959d5b25b"
             ]
         ]
     },
@@ -42,8 +40,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 390,
-        "y": 140,
+        "x": 490,
+        "y": 120,
         "wires": [
             [
                 "1f32d67b453d1c8e"
@@ -88,8 +86,8 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 610,
-        "y": 140,
+        "x": 730,
+        "y": 120,
         "wires": [
             []
         ]
@@ -106,8 +104,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 390,
-        "y": 280,
+        "x": 490,
+        "y": 250,
         "wires": [
             [
                 "f0efdd8d7f187094"
@@ -152,8 +150,8 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 630,
-        "y": 300,
+        "x": 750,
+        "y": 250,
         "wires": [
             []
         ]
@@ -170,8 +168,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 400,
-        "y": 220,
+        "x": 500,
+        "y": 185,
         "wires": [
             [
                 "91bbe4d85abe9322"
@@ -216,22 +214,212 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 620,
-        "y": 220,
+        "x": 740,
+        "y": 185,
         "wires": [
             []
         ]
+    },
+    {
+        "id": "4a32888f41a5dfa1",
+        "type": "file",
+        "z": "39182e558cf48c66",
+        "name": "",
+        "filename": "C:\\Users\\nicol\\Desktop\\data_sensor.txt",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 550,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "107d34bd8d2a81de",
+        "type": "function",
+        "z": "39182e558cf48c66",
+        "name": "Value Extract Category",
+        "func": "msg.payload = msg.payload.Prediction[0];\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 315,
+        "wires": [
+            [
+                "1dc4da2750a5bd69"
+            ]
+        ]
+    },
+    {
+        "id": "53441296cbcf33f5",
+        "type": "function",
+        "z": "39182e558cf48c66",
+        "name": "Value Extract Anomaly",
+        "func": "msg.payload = msg.payload.Anomaly;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 440,
+        "wires": [
+            [
+                "a5e7c0a6ada5a5c4"
+            ]
+        ]
+    },
+    {
+        "id": "1dc4da2750a5bd69",
+        "type": "ui_text",
+        "z": "39182e558cf48c66",
+        "group": "65df6b7e2bb8a395",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "AI Category",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 750,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "a5e7c0a6ada5a5c4",
+        "type": "ui_text",
+        "z": "39182e558cf48c66",
+        "group": "65df6b7e2bb8a395",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Anomaly Detection",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 770,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "6ba1af7d421b4ab9",
+        "type": "function",
+        "z": "39182e558cf48c66",
+        "name": "Value Extract Category score",
+        "func": "let confidence = msg.payload.Prediction[1];\nmsg.payload = (confidence * 100).toFixed(1);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 380,
+        "wires": [
+            [
+                "cb29bb3202f25c63"
+            ]
+        ]
+    },
+    {
+        "id": "cb29bb3202f25c63",
+        "type": "ui_gauge",
+        "z": "39182e558cf48c66",
+        "name": "",
+        "group": "65df6b7e2bb8a395",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Confidence",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#ca3838",
+            "#e6e600",
+            "#00d936"
+        ],
+        "seg1": "0.5",
+        "seg2": "0.75",
+        "diff": false,
+        "className": "",
+        "x": 750,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "d59d80f959d5b25b",
+        "type": "function",
+        "z": "39182e558cf48c66",
+        "name": "no Init Message",
+        "func": "\nif (msg.payload.hasOwnProperty(\"floor\")) {\n    //wrong payload\n    msg.payload = {Sensor_PIR : 0, Sensor_Ultra : 0, Sensor_Sound : 0, Time : 0, Prediction : [0,0], Anomaly: []};\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 200,
+        "wires": [
+            [
+                "4a32888f41a5dfa1",
+                "53441296cbcf33f5",
+                "6ba1af7d421b4ab9",
+                "107d34bd8d2a81de",
+                "695a29cc2f4c2cc5",
+                "baf5747829414234",
+                "4ff50ed4ce05fe77"
+            ]
+        ]
+    },
+    {
+        "id": "0a7fde53c6616cb1",
+        "type": "debug",
+        "z": "39182e558cf48c66",
+        "name": "payload",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 80,
+        "wires": []
     },
     {
         "id": "6ac719c63ad80d7a",
         "type": "mqtt-broker",
         "name": "hive",
         "broker": "broker.hivemq.com",
-        "port": 1883,
+        "port": "1883",
         "clientid": "",
         "autoConnect": true,
         "usetls": false,
-        "protocolVersion": 4,
+        "protocolVersion": "4",
         "keepalive": 60,
         "cleansession": true,
         "autoUnsubscribe": true,
@@ -259,7 +447,18 @@
         "name": "Standard",
         "tab": "f1c8308d9ae67fe7",
         "order": 1,
-        "disp": true,
+        "disp": false,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "65df6b7e2bb8a395",
+        "type": "ui_group",
+        "name": "v2",
+        "tab": "f1c8308d9ae67fe7",
+        "order": 2,
+        "disp": false,
         "width": 6,
         "collapse": false,
         "className": ""
@@ -269,11 +468,12 @@
         "type": "ui_tab",
         "name": "Home",
         "icon": "dashboard",
+        "order": 2,
         "disabled": false,
         "hidden": false
     },
     {
-        "id": "9c2cdf4a39e9b488",
+        "id": "79c24e6c0c40edc3",
         "type": "global-config",
         "env": [],
         "modules": {
